@@ -11,17 +11,6 @@ data:
 
     model_list:
       # ---- Claude Sonnet 4.6 ----
-      - model_name: claude-sonnet-4-6-20250514
-        litellm_params:
-          model: bedrock/us.anthropic.claude-sonnet-4-6
-          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
-          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
-          aws_region_name: us-east-1
-          rpm: 100
-          tpm: 400000
-          max_parallel_requests: 20
-
-      # 别名：Claude Code 会用这个名字请求
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-sonnet-4-6
@@ -33,17 +22,6 @@ data:
           max_parallel_requests: 20
 
       # ---- Claude Opus 4.6 ----
-      - model_name: claude-opus-4-6-20250514
-        litellm_params:
-          model: bedrock/us.anthropic.claude-opus-4-6-v1
-          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
-          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
-          aws_region_name: us-east-1
-          rpm: 50
-          tpm: 200000
-          max_parallel_requests: 10
-
-      # 别名：Claude Code 会用这个名字请求
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
@@ -85,7 +63,6 @@ data:
 
       fallbacks:
         - {"claude-sonnet-4-6": ["claude-haiku-3.5"]}
-        - {"claude-sonnet-4-6-20250514": ["claude-haiku-3.5"]}
 
       cache: true
       cache_params:
