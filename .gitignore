@@ -1,0 +1,8 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+
+# Secrets - never commit
+k8s/*-secrets.yaml
