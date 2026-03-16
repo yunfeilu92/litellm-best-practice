@@ -32,6 +32,28 @@ data:
           tpm: 200000
           max_parallel_requests: 10
 
+      # ---- Claude Sonnet 4.5 ----
+      - model_name: claude-sonnet-4-5
+        litellm_params:
+          model: bedrock/us.anthropic.claude-sonnet-4-5-20250929-v1:0
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
+          aws_region_name: us-east-1
+          rpm: 100
+          tpm: 400000
+          max_parallel_requests: 20
+
+      # ---- Claude Opus 4.5 ----
+      - model_name: claude-opus-4-5
+        litellm_params:
+          model: bedrock/us.anthropic.claude-opus-4-5-20251101-v1:0
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
+          aws_region_name: us-east-1
+          rpm: 50
+          tpm: 200000
+          max_parallel_requests: 10
+
       # ---- GPT-4o → Claude Opus 4.6 (视觉替代) ----
       - model_name: gpt-4o
         litellm_params:
