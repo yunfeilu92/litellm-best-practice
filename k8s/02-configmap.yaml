@@ -55,18 +55,17 @@ data:
           max_parallel_requests: 10
 
       # ---- GPT-4o → Claude Opus 4.6 (视觉替代) ----
-      # supported_params 排除 top_p，避免与 temperature 冲突
+      # additional_drop_params 强制丢弃 top_p，避免与 temperature 冲突
       - model_name: gpt-4o
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
+          additional_drop_params: ["top_p"]
           rpm: 50
           tpm: 200000
           max_parallel_requests: 10
-        model_info:
-          supported_params: ["stream", "temperature", "max_tokens", "messages", "tools", "tool_choice", "stop"]
 
       # ---- Claude Haiku 3.5 (轻量/降级) ----
       - model_name: claude-haiku-3.5
