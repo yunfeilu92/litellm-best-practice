@@ -55,12 +55,14 @@ data:
           max_parallel_requests: 10
 
       # ---- GPT-4o → Claude Opus 4.6 (视觉替代) ----
+      # top_p: null 覆盖客户端传入的 top_p，避免与 temperature 冲突
       - model_name: gpt-4o
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
+          top_p: null
           rpm: 50
           tpm: 200000
           max_parallel_requests: 10
