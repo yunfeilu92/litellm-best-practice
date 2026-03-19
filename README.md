@@ -228,13 +228,12 @@ curl 'http://litellm:4000/team/info?team_id=<team-uuid>' \
 ```bash
 # 环境变量方式（推荐）
 export ANTHROPIC_BASE_URL="http://<your-alb-address>"
-export ANTHROPIC_API_KEY="sk-your-litellm-virtual-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-litellm-virtual-key"
 claude
 
 # 注意：
 # - Virtual Key 必须包含 claude-sonnet-4-6 和 claude-opus-4-6 模型权限
 # - ANTHROPIC_BASE_URL 不要有尾部斜杠
-# - 如果同时设置了 ANTHROPIC_AUTH_TOKEN，需要先 unset
 ```
 
 ---
@@ -456,7 +455,7 @@ LOG_BUCKET_REGION="us-east-1"
 最简单的方式是设置环境变量：
 ```bash
 export ANTHROPIC_BASE_URL="https://your-litellm-proxy.example.com"
-export ANTHROPIC_API_KEY="sk-your-litellm-virtual-key"
+export ANTHROPIC_AUTH_TOKEN="sk-your-litellm-virtual-key"
 ```
 
 ### Q: Bedrock 用 IAM Role 还是 AKSK？
