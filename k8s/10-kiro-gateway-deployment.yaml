@@ -86,7 +86,9 @@ spec:
                       ).fetchone()
                       conn.close()
                       if row:
-                          print("SQLite DB already has token, skipping init")
+                          print("SQLite DB already has token, fixing permissions")
+                          import subprocess
+                          subprocess.run(["chown", "-R", "999:999", "/data/kiro"], check=True)
                           sys.exit(0)
                   except Exception:
                       pass  # DB 损坏，重新初始化
@@ -133,6 +135,10 @@ spec:
               conn.commit()
               conn.close()
               print("SQLite DB initialized with kiro credentials")
+
+              # 确保 kiro 用户 (uid=999) 可写
+              import subprocess
+              subprocess.run(["chown", "-R", "999:999", "/data/kiro"], check=True)
           env:
             - name: KIRO_INITIAL_REFRESH_TOKEN
               valueFrom:
