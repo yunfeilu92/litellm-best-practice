@@ -11,6 +11,7 @@ data:
 
     model_list:
       # ---- Claude Sonnet 4.6 (Kiro Gateway - 优先，低成本) ----
+      # Pricing: $3/M input, $15/M output (与 Anthropic API 一致)
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: anthropic/claude-sonnet-4-6
@@ -18,8 +19,8 @@ data:
           api_key: os.environ/KIRO_PROXY_API_KEY
           weight: 9
         model_info:
-          input_cost_per_token: 0
-          output_cost_per_token: 0
+          input_cost_per_token: 0.000003
+          output_cost_per_token: 0.000015
 
       # ---- Claude Sonnet 4.6 (Bedrock - 兜底) ----
       - model_name: claude-sonnet-4-6
@@ -34,6 +35,7 @@ data:
           weight: 1
 
       # ---- Claude Opus 4.6 (Kiro Gateway - 优先，低成本) ----
+      # Pricing: $5/M input, $25/M output (与 Anthropic API 一致)
       - model_name: claude-opus-4-6
         litellm_params:
           model: anthropic/claude-opus-4-6
@@ -41,8 +43,8 @@ data:
           api_key: os.environ/KIRO_PROXY_API_KEY
           weight: 9
         model_info:
-          input_cost_per_token: 0
-          output_cost_per_token: 0
+          input_cost_per_token: 0.000005
+          output_cost_per_token: 0.000025
 
       # ---- Claude Opus 4.6 (Bedrock - 兜底) ----
       - model_name: claude-opus-4-6
