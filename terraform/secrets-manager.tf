@@ -100,6 +100,8 @@ resource "aws_secretsmanager_secret_version" "kiro_gateway" {
   secret_id = aws_secretsmanager_secret.kiro_gateway.id
   secret_string = jsonencode({
     KIRO_REFRESH_TOKEN = "CHANGE_ME"
+    KIRO_CLIENT_ID     = "CHANGE_ME"
+    KIRO_CLIENT_SECRET = "CHANGE_ME"
     KIRO_PROXY_API_KEY = "CHANGE_ME"
   })
 
