@@ -10,7 +10,18 @@ data:
     # ============================================================
 
     model_list:
-      # ---- Claude Sonnet 4.6 ----
+      # ---- Claude Sonnet 4.6 (Kiro Gateway - 优先，低成本) ----
+      - model_name: claude-sonnet-4-6
+        litellm_params:
+          model: openai/claude-sonnet-4-6
+          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000/v1
+          api_key: os.environ/KIRO_PROXY_API_KEY
+          weight: 9
+        model_info:
+          input_cost_per_token: 0
+          output_cost_per_token: 0
+
+      # ---- Claude Sonnet 4.6 (Bedrock - 兜底) ----
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-sonnet-4-6
@@ -20,8 +31,20 @@ data:
           rpm: 100
           tpm: 400000
           max_parallel_requests: 20
+          weight: 1
 
-      # ---- Claude Opus 4.6 ----
+      # ---- Claude Opus 4.6 (Kiro Gateway - 优先，低成本) ----
+      - model_name: claude-opus-4-6
+        litellm_params:
+          model: openai/claude-opus-4-6
+          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000/v1
+          api_key: os.environ/KIRO_PROXY_API_KEY
+          weight: 9
+        model_info:
+          input_cost_per_token: 0
+          output_cost_per_token: 0
+
+      # ---- Claude Opus 4.6 (Bedrock - 兜底) ----
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
@@ -31,6 +54,7 @@ data:
           rpm: 50
           tpm: 200000
           max_parallel_requests: 10
+          weight: 1
 
       # ---- Claude Sonnet 4.5 ----
       - model_name: claude-sonnet-4-5

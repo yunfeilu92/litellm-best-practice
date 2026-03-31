@@ -38,6 +38,8 @@ spec:
           envFrom:
             - secretRef:
                 name: litellm-secrets
+            - secretRef:
+                name: kiro-gateway-secrets
           env:
             - name: LITELLM_LOG
               value: "ERROR"

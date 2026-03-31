@@ -1,0 +1,89 @@
+# ============================================================
+# Kiro Gateway - Deployment + Service
+# 提供 OpenAI-compatible API，通过 Kiro (Amazon Q Developer) 访问 Claude 模型
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiro-gateway
+  namespace: litellm
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: kiro-gateway
+  template:
+    metadata:
+      labels:
+        app: kiro-gateway
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: kiro-gateway
+          image: kiro-gateway:latest  # TODO: 替换为实际的 ECR image URI
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: REFRESH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: kiro-gateway-secrets
+                  key: KIRO_REFRESH_TOKEN
+            - name: PROXY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kiro-gateway-secrets
+                  key: KIRO_PROXY_API_KEY
+            - name: KIRO_REGION
+              value: "us-east-1"
+            - name: SERVER_HOST
+              value: "0.0.0.0"
+            - name: SERVER_PORT
+              value: "8000"
+            - name: LOG_LEVEL
+              value: "INFO"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kiro-gateway
+  namespace: litellm
+spec:
+  selector:
+    app: kiro-gateway
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

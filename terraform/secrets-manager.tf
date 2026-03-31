@@ -89,6 +89,43 @@ resource "aws_iam_role_policy" "eso" {
   })
 }
 
+# ---- Kiro Gateway Secrets ----
+resource "aws_secretsmanager_secret" "kiro_gateway" {
+  name                    = "kiro-gateway/config"
+  description             = "Kiro Gateway secrets (refresh token, proxy API key)"
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "kiro_gateway" {
+  secret_id = aws_secretsmanager_secret.kiro_gateway.id
+  secret_string = jsonencode({
+    KIRO_REFRESH_TOKEN = "CHANGE_ME"
+    KIRO_PROXY_API_KEY = "CHANGE_ME"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
+# ESO 需要访问 kiro-gateway secret 的权限
+resource "aws_iam_role_policy" "eso_kiro" {
+  name = "${var.project_name}-eso-kiro-secrets-access"
+  role = aws_iam_role.eso.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+      ]
+      Resource = [aws_secretsmanager_secret.kiro_gateway.arn]
+    }]
+  })
+}
+
 # ---- Outputs ----
 output "secrets_manager_secret_name" {
   value = aws_secretsmanager_secret.litellm.name
