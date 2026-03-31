@@ -105,24 +105,17 @@ data:
           max_parallel_requests: 50
 
       # ---- Claude Haiku 4.5 (Claude Code 内部工具使用) ----
-      # 优先走 kiro（支持 output_config 参数，Bedrock 不支持）
-      - model_name: claude-haiku-4-5-20251001
-        litellm_params:
-          model: anthropic/claude-haiku-4.5
-          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
-          api_key: os.environ/KIRO_PROXY_API_KEY
-          weight: 9
+      # 只走 Bedrock — kiro 不支持 Anthropic server-side tools (web_search_20250305)
       - model_name: claude-haiku-4-5-20251001
         litellm_params:
           model: bedrock/us.anthropic.claude-3-5-haiku-20241022-v1:0
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
-          additional_drop_params: ["output_config"]
+          drop_params: true
           rpm: 200
           tpm: 800000
           max_parallel_requests: 50
-          weight: 1
 
     router_settings:
       routing_strategy: simple-shuffle
