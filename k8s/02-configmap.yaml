@@ -113,6 +113,7 @@ data:
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
           drop_params: true
+          additional_drop_params: ["output_config"]
           rpm: 200
           tpm: 800000
           max_parallel_requests: 50
