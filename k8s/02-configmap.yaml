@@ -10,19 +10,18 @@ data:
     # ============================================================
 
     model_list:
-      # ---- Claude Sonnet 4.6 (Kiro Gateway - 优先，低成本) ----
-      # Pricing: $3/M input, $15/M output (与 Anthropic API 一致)
+      # ---- Claude Sonnet 4.6 (Kiro Gateway - 暂停，weight=0) ----
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: anthropic/claude-sonnet-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
-          weight: 9
+          weight: 0
         model_info:
           input_cost_per_token: 0.000003
           output_cost_per_token: 0.000015
 
-      # ---- Claude Sonnet 4.6 (Bedrock - 兜底) ----
+      # ---- Claude Sonnet 4.6 (Bedrock) ----
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-sonnet-4-6
@@ -32,21 +31,19 @@ data:
           rpm: 100
           tpm: 400000
           max_parallel_requests: 20
-          weight: 1
 
-      # ---- Claude Opus 4.6 (Kiro Gateway - 优先，低成本) ----
-      # Pricing: $5/M input, $25/M output (与 Anthropic API 一致)
+      # ---- Claude Opus 4.6 (Kiro Gateway - 暂停，weight=0) ----
       - model_name: claude-opus-4-6
         litellm_params:
           model: anthropic/claude-opus-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
-          weight: 9
+          weight: 0
         model_info:
           input_cost_per_token: 0.000005
           output_cost_per_token: 0.000025
 
-      # ---- Claude Opus 4.6 (Bedrock - 兜底) ----
+      # ---- Claude Opus 4.6 (Bedrock) ----
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
@@ -56,7 +53,6 @@ data:
           rpm: 50
           tpm: 200000
           max_parallel_requests: 10
-          weight: 1
 
       # ---- Claude Sonnet 4.5 ----
       - model_name: claude-sonnet-4-5
@@ -105,15 +101,12 @@ data:
           max_parallel_requests: 50
 
       # ---- Claude Haiku 4.5 (Claude Code 内部工具使用) ----
-      # 只走 Bedrock — kiro 不支持 Anthropic server-side tools (web_search_20250305)
       - model_name: claude-haiku-4-5-20251001
         litellm_params:
           model: bedrock/us.anthropic.claude-3-5-haiku-20241022-v1:0
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
-          drop_params: true
-          additional_drop_params: ["output_config"]
           rpm: 200
           tpm: 800000
           max_parallel_requests: 50
