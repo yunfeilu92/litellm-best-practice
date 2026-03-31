@@ -13,8 +13,8 @@ data:
       # ---- Claude Sonnet 4.6 (Kiro Gateway - 优先，低成本) ----
       - model_name: claude-sonnet-4-6
         litellm_params:
-          model: openai/claude-sonnet-4-6
-          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000/v1
+          model: anthropic/claude-sonnet-4-6
+          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
           weight: 9
         model_info:
@@ -36,8 +36,8 @@ data:
       # ---- Claude Opus 4.6 (Kiro Gateway - 优先，低成本) ----
       - model_name: claude-opus-4-6
         litellm_params:
-          model: openai/claude-opus-4-6
-          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000/v1
+          model: anthropic/claude-opus-4-6
+          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
           weight: 9
         model_info:
