@@ -77,7 +77,13 @@ spec:
               mountPath: /app/config.yaml
               subPath: config.yaml
               readOnly: true
+            - name: plugins
+              mountPath: /app/plugins
+              readOnly: true
       volumes:
         - name: config
           configMap:
             name: litellm-config
+        - name: plugins
+          configMap:
+            name: litellm-plugins
