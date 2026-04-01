@@ -10,32 +10,10 @@ data:
     # ============================================================
 
     model_list:
-      # ==== Bedrock 组 ====
-      # ---- Claude Sonnet 4.6 (Bedrock) ----
+      # ==== 主模型 → Kiro Gateway（客户端无感知） ====
+      # 切回 Bedrock：改 model/api_base 为 bedrock/ 配置即可
+      # ---- Claude Sonnet 4.6 ----
       - model_name: claude-sonnet-4-6
-        litellm_params:
-          model: bedrock/us.anthropic.claude-sonnet-4-6
-          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
-          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
-          aws_region_name: us-east-1
-          rpm: 100
-          tpm: 400000
-          max_parallel_requests: 20
-
-      # ---- Claude Opus 4.6 (Bedrock) ----
-      - model_name: claude-opus-4-6
-        litellm_params:
-          model: bedrock/us.anthropic.claude-opus-4-6-v1
-          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
-          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
-          aws_region_name: us-east-1
-          rpm: 50
-          tpm: 200000
-          max_parallel_requests: 10
-
-      # ==== Kiro Gateway 组 ====
-      # ---- Claude Sonnet 4.6 (Kiro) ----
-      - model_name: kiro/claude-sonnet-4-6
         litellm_params:
           model: anthropic/claude-sonnet-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
@@ -44,8 +22,8 @@ data:
           input_cost_per_token: 0.000003
           output_cost_per_token: 0.000015
 
-      # ---- Claude Opus 4.6 (Kiro) ----
-      - model_name: kiro/claude-opus-4-6
+      # ---- Claude Opus 4.6 ----
+      - model_name: claude-opus-4-6
         litellm_params:
           model: anthropic/claude-opus-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
@@ -103,13 +81,9 @@ data:
       # ---- Claude Haiku 4.5 (Claude Code 内部工具使用) ----
       - model_name: claude-haiku-4-5-20251001
         litellm_params:
-          model: bedrock/us.anthropic.claude-3-5-haiku-20241022-v1:0
-          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
-          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
-          aws_region_name: us-east-1
-          rpm: 200
-          tpm: 800000
-          max_parallel_requests: 50
+          model: anthropic/claude-haiku-4.5
+          api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
+          api_key: os.environ/KIRO_PROXY_API_KEY
 
     router_settings:
       routing_strategy: simple-shuffle
