@@ -10,14 +10,14 @@ data:
     # ============================================================
 
     model_list:
-      # ==== Claude Sonnet 4.6 (Bedrock 9 : Kiro 1) ====
+      # ==== Claude Sonnet 4.6 (Bedrock 1 : Kiro 1) ====
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-sonnet-4-6
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
-          weight: 9
+          weight: 1
           rpm: 100
           tpm: 400000
           max_parallel_requests: 20
@@ -31,14 +31,14 @@ data:
           input_cost_per_token: 0.000003
           output_cost_per_token: 0.000015
 
-      # ==== Claude Opus 4.6 (Bedrock 9 : Kiro 1) ====
+      # ==== Claude Opus 4.6 (Bedrock 1 : Kiro 1) ====
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
           aws_region_name: us-east-1
-          weight: 9
+          weight: 1
           rpm: 50
           tpm: 200000
           max_parallel_requests: 10
