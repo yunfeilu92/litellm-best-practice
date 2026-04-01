@@ -126,13 +126,17 @@ class ThinkingBlockGuard(CustomLogger):
         current = self._backend_id(kwargs)
         previous = self._last_backend.get(conv_key)
 
-        if previous and previous != current and self._has_thinking(messages):
+        # Strip if: (1) backend changed, or (2) no previous record (cold start/pod restart)
+        # and there are thinking blocks from a potentially different backend
+        should_strip = (
+            self._has_thinking(messages)
+            and (previous is None or previous != current)
+        )
+        if should_strip:
             removed = self._strip_thinking(messages)
             logger.warning(
-                "ThinkingBlockGuard: backend switched %s→%s for conv %s, "
-                "stripped %d thinking block(s)",
-                previous,
-                current,
+                "ThinkingBlockGuard: %s for conv %s, stripped %d thinking block(s)",
+                f"backend switched {previous}->{current}" if previous else f"cold start, target={current}",
                 conv_key,
                 removed,
             )
