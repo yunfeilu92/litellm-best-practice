@@ -1,6 +1,7 @@
 # ============================================================
 # ThinkingBlockGuard - LiteLLM callback plugin
-# Strips thinking blocks on backend switch (kiro ↔ bedrock)
+# Strips thinking blocks on backend switch (kiro <-> bedrock)
+# Uses Redis for cross-pod state sharing
 # ============================================================
 
 apiVersion: v1
@@ -14,27 +15,58 @@ data:
     """
     ThinkingBlockGuard — LiteLLM callback that strips thinking blocks
     when the router switches between kiro-gateway and Bedrock backends.
+
+    Uses Redis (shared across all LiteLLM pods) to track which backend
+    last served each conversation. When a backend switch is detected,
+    thinking blocks are stripped to prevent signature validation errors.
     """
 
     import hashlib
     import logging
+    import os
     from typing import Any, Dict, List, Optional
 
+    import redis
     from litellm.integrations.custom_logger import CustomLogger
     from litellm.types.utils import CallTypes
 
     logger = logging.getLogger(__name__)
+
+    REDIS_KEY_PREFIX = "tbg:"
+    REDIS_TTL = 86400  # 24h — conversations older than this are forgotten
 
 
     class ThinkingBlockGuard(CustomLogger):
 
         KIRO_MARKER = "kiro-gateway"
         THINKING_TYPES = frozenset(("thinking", "redacted_thinking"))
-        MAX_CACHE_SIZE = 10_000
 
         def __init__(self) -> None:
             super().__init__()
-            self._last_backend: Dict[str, str] = {}
+            self._redis: Optional[redis.Redis] = None
+
+        def _get_redis(self) -> Optional[redis.Redis]:
+            if self._redis is not None:
+                return self._redis
+            host = os.environ.get("REDIS_HOST")
+            if not host:
+                return None
+            try:
+                self._redis = redis.Redis(
+                    host=host,
+                    port=int(os.environ.get("REDIS_PORT", "6379")),
+                    password=os.environ.get("REDIS_PASSWORD") or None,
+                    decode_responses=True,
+                    socket_connect_timeout=2,
+                    socket_timeout=2,
+                )
+                self._redis.ping()
+                logger.info("ThinkingBlockGuard: connected to Redis at %s", host)
+                return self._redis
+            except Exception as e:
+                logger.warning("ThinkingBlockGuard: Redis unavailable (%s), falling back to always-strip", e)
+                self._redis = None
+                return None
 
         @staticmethod
         def _conversation_key(messages: List[dict]) -> str:
@@ -60,6 +92,24 @@ data:
                 or ""
             )
             return "kiro" if self.KIRO_MARKER in str(api_base) else "bedrock"
+
+        def _get_previous(self, conv_key: str) -> Optional[str]:
+            r = self._get_redis()
+            if r is None:
+                return None
+            try:
+                return r.get(f"{REDIS_KEY_PREFIX}{conv_key}")
+            except Exception:
+                return None
+
+        def _set_current(self, conv_key: str, backend: str) -> None:
+            r = self._get_redis()
+            if r is None:
+                return
+            try:
+                r.set(f"{REDIS_KEY_PREFIX}{conv_key}", backend, ex=REDIS_TTL)
+            except Exception:
+                pass
 
         @classmethod
         def _has_thinking(cls, messages: List[dict]) -> bool:
@@ -91,58 +141,36 @@ data:
                 removed += original_len - len(msg["content"])
             return removed
 
-        def _evict_cache(self) -> None:
-            if len(self._last_backend) > self.MAX_CACHE_SIZE:
-                keys = list(self._last_backend.keys())
-                for k in keys[: self.MAX_CACHE_SIZE // 2]:
-                    del self._last_backend[k]
-
         async def async_pre_call_deployment_hook(
             self,
             kwargs: Dict[str, Any],
             call_type: Optional[CallTypes],
         ) -> Optional[dict]:
             messages = kwargs.get("messages")
-            if not messages:
+            if not messages or not self._has_thinking(messages):
+                # No thinking blocks — just record current backend and return
+                if messages:
+                    conv_key = self._conversation_key(messages)
+                    current = self._backend_id(kwargs)
+                    self._set_current(conv_key, current)
                 return None
 
             conv_key = self._conversation_key(messages)
             current = self._backend_id(kwargs)
-            previous = self._last_backend.get(conv_key)
+            previous = self._get_previous(conv_key)
 
-            # Strip if: (1) backend changed, or (2) no previous record (cold start/pod restart)
-            # and there are thinking blocks from a potentially different backend
-            should_strip = (
-                self._has_thinking(messages)
-                and (previous is None or previous != current)
-            )
+            should_strip = (previous is None or previous != current)
+
             if should_strip:
                 removed = self._strip_thinking(messages)
                 logger.warning(
                     "ThinkingBlockGuard: %s for conv %s, stripped %d thinking block(s)",
-                    f"backend switched {previous}->{current}" if previous else f"cold start, target={current}",
+                    f"backend switched {previous}->{current}" if previous else f"no record, target={current}",
                     conv_key,
                     removed,
                 )
 
-            self._last_backend[conv_key] = current
-            self._evict_cache()
-
-            # Debug: verify thinking blocks are gone after strip
-            if previous and previous != current:
-                remaining = sum(
-                    1 for msg in messages if msg.get("role") == "assistant"
-                    and isinstance(msg.get("content"), list)
-                    for block in msg["content"]
-                    if isinstance(block, dict) and block.get("type") in self.THINKING_TYPES
-                ) if messages else 0
-                logger.warning(
-                    "ThinkingBlockGuard: after strip, %d thinking blocks remain in %d messages, kwargs keys: %s",
-                    remaining,
-                    len(messages),
-                    [k for k in kwargs.keys() if "message" in k.lower()],
-                )
-
+            self._set_current(conv_key, current)
             return kwargs
 
     thinking_block_guard = ThinkingBlockGuard()
