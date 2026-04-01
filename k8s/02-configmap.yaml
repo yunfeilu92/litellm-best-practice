@@ -10,7 +10,7 @@ data:
     # ============================================================
 
     model_list:
-      # ==== Claude Sonnet 4.6 (Bedrock 1 : Kiro 1) ====
+      # ==== Claude Sonnet 4.6 (Kiro 9 : Bedrock 1) ====
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-sonnet-4-6
@@ -26,12 +26,12 @@ data:
           model: anthropic/claude-sonnet-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
-          weight: 1
+          weight: 9
         model_info:
           input_cost_per_token: 0.000003
           output_cost_per_token: 0.000015
 
-      # ==== Claude Opus 4.6 (Bedrock 1 : Kiro 1) ====
+      # ==== Claude Opus 4.6 (Kiro 9 : Bedrock 1) ====
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/us.anthropic.claude-opus-4-6-v1
@@ -47,7 +47,7 @@ data:
           model: anthropic/claude-opus-4-6
           api_base: http://kiro-gateway.litellm.svc.cluster.local:8000
           api_key: os.environ/KIRO_PROXY_API_KEY
-          weight: 1
+          weight: 9
         model_info:
           input_cost_per_token: 0.000005
           output_cost_per_token: 0.000025
