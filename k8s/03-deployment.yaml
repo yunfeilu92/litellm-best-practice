@@ -22,6 +22,7 @@ spec:
       containers:
         - name: litellm
           image: docker.litellm.ai/berriai/litellm:main-stable
+          imagePullPolicy: Always
           args:
             - "--config"
             - "/app/config.yaml"
