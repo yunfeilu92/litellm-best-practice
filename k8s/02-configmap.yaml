@@ -10,7 +10,7 @@ data:
     # ============================================================
 
     model_list:
-      # ==== Claude Opus 4.6 (Opus + Sonnet 1:1 dual deployment) ====
+      # ==== Claude Opus 4.6 (2x Opus + 2x Sonnet, dual AKSK) ====
       - model_name: claude-opus-4-6
         litellm_params:
           model: bedrock/global.anthropic.claude-opus-4-6-v1
@@ -27,8 +27,24 @@ data:
           max_input_tokens: 1000000
           input_cost_per_token: 0.000005
           output_cost_per_token: 0.000025
+      - model_name: claude-opus-4-6
+        litellm_params:
+          model: bedrock/global.anthropic.claude-opus-4-6-v1
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_2
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_2
+          aws_region_name: us-east-1
+      - model_name: claude-opus-4-6
+        litellm_params:
+          model: bedrock/global.anthropic.claude-sonnet-4-6
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_2
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_2
+          aws_region_name: us-east-1
+        model_info:
+          max_input_tokens: 1000000
+          input_cost_per_token: 0.000005
+          output_cost_per_token: 0.000025
 
-      # ==== Claude Sonnet 4.6 ====
+      # ==== Claude Sonnet 4.6 (dual AKSK) ====
       - model_name: claude-sonnet-4-6
         litellm_params:
           model: bedrock/global.anthropic.claude-sonnet-4-6
@@ -37,13 +53,27 @@ data:
           aws_region_name: us-east-1
         model_info:
           max_input_tokens: 1000000
+      - model_name: claude-sonnet-4-6
+        litellm_params:
+          model: bedrock/global.anthropic.claude-sonnet-4-6
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_2
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_2
+          aws_region_name: us-east-1
+        model_info:
+          max_input_tokens: 1000000
 
-      # ==== Claude Haiku 4.5 ====
+      # ==== Claude Haiku 4.5 (dual AKSK) ====
       - model_name: claude-haiku-4-5-20251001
         litellm_params:
           model: bedrock/global.anthropic.claude-haiku-4-5-20251001-v1:0
           aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_1
           aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_1
+          aws_region_name: us-east-1
+      - model_name: claude-haiku-4-5-20251001
+        litellm_params:
+          model: bedrock/global.anthropic.claude-haiku-4-5-20251001-v1:0
+          aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID_2
+          aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY_2
           aws_region_name: us-east-1
 
       # ---- GPT-4o → Claude Opus 4.6 (视觉替代) ----
